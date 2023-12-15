@@ -12,7 +12,7 @@ end
 class GameRow
   attr_reader :farleft, :left, :right, :farright
 
-  def initialize(farleft, left, right, _farright)
+  def initialize(farleft, left, right, farright)
     @farleft = farleft
     @left = left
     @right = right
@@ -31,10 +31,31 @@ class GamePieces
 end
 
 # Player and Computer classes
-class Player
-  attr_accessor :role
+class Players
+  attr_accessor :name, :role
 
-  def initialize(role)
+  def initialize(name, role)
+    @name = name
     @role = role
   end
 end
+
+# Give codebreaker class to make guesses
+class CodeBreaker
+  def guess
+    p 'Pick colors for the four locations: '
+    gets.chomp
+  end
+end
+
+# Give codemaster role to generate initial configuration
+class CodeMaster
+  def initialize; end
+
+  def make_code
+    4.times.map { Random.rand(1..6) }
+  end
+end
+
+computer = CodeMaster.new
+p computer.make_code
