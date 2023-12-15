@@ -1,11 +1,26 @@
 # frozen_string_literal: true
 
 # This defines the rules for the game
-class GameRules
+module GameRules
+  def test
+    puts test
+  end
+end
+
+# Actual actions for playing the game and winning
+class Game
+  def initialize; end
 end
 
 # This sets up the pieces of the board
 class GameBoard
+  def initialize; end
+
+  def starting_guess(code)
+    code.each_with_index.map do |color, position|
+      GamePieces.new(color, position)
+    end
+  end
 end
 
 # This is each row for the game made up of four pieces
@@ -24,9 +39,9 @@ end
 class GamePieces
   attr_reader :position, :color
 
-  def initialize(position, color)
-    @position = position
+  def initialize(color, position)
     @color = color
+    @position = position
   end
 end
 
@@ -58,4 +73,5 @@ class CodeMaster
 end
 
 computer = CodeMaster.new
-p computer.make_code
+game_board = GameBoard.new
+p game_board.starting_guess(computer.make_code)
