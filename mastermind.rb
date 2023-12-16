@@ -5,7 +5,12 @@ module GameRules
   def check_guess(starting_board, guess)
     guess_results = []
     guess_right?(starting_board, guess, guess_results)
-    GameRow.new(guess_results)
+    current_row = GameRow.new(guess_results)
+    "#{current_row.farleft} #{current_row.left} #{current_row.right} #{current_row.farright}"
+  end
+
+  def winner?(starting_board, guess)
+    (starting_board <=> guess.map(&:to_i)).zero?
   end
 
   def guess_right?(starting_board, guess, guess_results)
@@ -22,8 +27,17 @@ module GameRules
 end
 
 # Actual actions for playing the game and winning
-class Game
-  def initialize; end
+def run_game(player, game_board)
+  p game_board.starting_board
+  i = 0
+  while i < 12
+    guess = player.guess
+    game_board.board_update(guess).each { |row| p row }
+    return 'Congrats you won!' if player.winner?(game_board.starting_board, guess)
+
+    i += 1
+  end
+  'Better luck next time!'
 end
 
 # This sets up the pieces of the board
@@ -39,7 +53,6 @@ class GameBoard
 
   def board_update(guess)
     guess_board.push(player.check_guess(starting_board, guess))
-    guess_board
   end
 end
 
@@ -105,6 +118,4 @@ end
 computer = CodeMaster.new
 player = CodeBreaker.new
 game_board = GameBoard.new(computer, player)
-p game_board.starting_board
-game_board.board_update([1, 2, 3, 4])
-p game_board.board_update([2, 2, 3, 4])
+run_game(player, game_board)
