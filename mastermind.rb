@@ -28,7 +28,7 @@ end
 
 # Actual actions for playing the game and winning
 def run_game(player, game_board)
-  p game_board.starting_board
+  game_board.starting_board
   i = 0
   while i < 12
     guess = player.guess
@@ -101,6 +101,10 @@ class CodeBreaker
   def guess
     p 'Pick colors for the four locations: '
     guess = gets.chomp
+    until guess.length <= 4 && guess.to_i != 0
+      p 'Please try again'
+      guess = gets.chomp
+    end
     guesses.push(guess.split(''))
     guess.split('')
   end
