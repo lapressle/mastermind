@@ -5,8 +5,7 @@ module GameRules
   def check_guess(starting_board, guess)
     guess_results = []
     guess_right?(starting_board, guess, guess_results)
-    current_correctness = GameRow.new(guess_results)
-    p current_correctness
+    GameRow.new(guess_results)
   end
 
   def guess_right?(starting_board, guess, guess_results)
@@ -29,10 +28,18 @@ end
 
 # This sets up the pieces of the board
 class GameBoard
-  attr_reader :starting_board
+  attr_reader :starting_board, :player
+  attr_accessor :guess_board
 
-  def initialize(code_master)
+  def initialize(code_master, player)
     @starting_board = code_master.make_code
+    @player = player
+    @guess_board = []
+  end
+
+  def board_update(guess)
+    guess_board.push(player.check_guess(starting_board, guess))
+    guess_board
   end
 end
 
@@ -70,13 +77,18 @@ end
 
 # Give codebreaker class to make guesses
 class CodeBreaker
-  def initialize; end
+  attr_accessor :guesses
+
+  def initialize
+    @guesses = []
+  end
 
   include GameRules
 
   def guess
     p 'Pick colors for the four locations: '
     guess = gets.chomp
+    guesses.push(guess.split(''))
     guess.split('')
   end
 end
@@ -91,7 +103,8 @@ class CodeMaster
 end
 
 computer = CodeMaster.new
-game_board = GameBoard.new(computer)
-p game_board.starting_board
 player = CodeBreaker.new
-player.check_guess(game_board.starting_board, [1, 2, 3, 4])
+game_board = GameBoard.new(computer, player)
+p game_board.starting_board
+game_board.board_update([1, 2, 3, 4])
+p game_board.board_update([2, 2, 3, 4])
