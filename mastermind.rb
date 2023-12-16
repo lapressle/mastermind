@@ -2,8 +2,23 @@
 
 # This defines the rules for the game
 module GameRules
-  def test
-    puts test
+  def check_guess(starting_board, guess)
+    guess_results = []
+    guess_right?(starting_board, guess, guess_results)
+    current_correctness = GameRow.new(guess_results)
+    p current_correctness
+  end
+
+  def guess_right?(starting_board, guess, guess_results)
+    starting_board.each_with_index do |color, position|
+      if color == guess[position].to_i
+        guess_results.push(color)
+      elsif starting_board.any? { |color| color == guess[position].to_i }
+        guess_results.push('0')
+      else
+        guess_results.push('x')
+      end
+    end
   end
 end
 
@@ -14,12 +29,10 @@ end
 
 # This sets up the pieces of the board
 class GameBoard
-  def initialize; end
+  attr_reader :starting_board
 
-  def starting_guess(code)
-    code.each_with_index.map do |color, position|
-      GamePieces.new(color, position)
-    end
+  def initialize(code_master)
+    @starting_board = code_master.make_code
   end
 end
 
@@ -27,11 +40,11 @@ end
 class GameRow
   attr_reader :farleft, :left, :right, :farright
 
-  def initialize(farleft, left, right, farright)
-    @farleft = farleft
-    @left = left
-    @right = right
-    @farright = farright
+  def initialize(arr)
+    @farleft = arr[0]
+    @left = arr[1]
+    @right = arr[2]
+    @farright = arr[3]
   end
 end
 
@@ -57,9 +70,14 @@ end
 
 # Give codebreaker class to make guesses
 class CodeBreaker
+  def initialize; end
+
+  include GameRules
+
   def guess
     p 'Pick colors for the four locations: '
-    gets.chomp
+    guess = gets.chomp
+    guess.split('')
   end
 end
 
@@ -73,5 +91,7 @@ class CodeMaster
 end
 
 computer = CodeMaster.new
-game_board = GameBoard.new
-p game_board.starting_guess(computer.make_code)
+game_board = GameBoard.new(computer)
+p game_board.starting_board
+player = CodeBreaker.new
+player.check_guess(game_board.starting_board, [1, 2, 3, 4])
