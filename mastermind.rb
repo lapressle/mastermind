@@ -40,12 +40,19 @@ def run_game(player, game_board)
   'Better luck next time!'
 end
 
+def computer_start(computer, game_board)
+  guess = computer.computer_guess
+  row = game_board.board_update(guess)
+  p row[0].split(' ')
+end
+
 def run_computer_game(computer, game_board)
   game_board.starting_board
-  i = 0
+  i = 1
+  current_row = computer_start(computer, game_board)
   while i < 12
-    guess = computer.computer_guess
-    game_board.board_update(guess).each { |row| p row }
+    p guess = current_row.map { |e| e.to_i.positive? ? e : Random.rand(1..6) }
+    game_board.board_update(guess).each { |row| p current_row = row.split(' ') }
     return 'The computer cracked it!' if computer.winner?(game_board.starting_board, guess)
 
     i += 1
@@ -159,11 +166,13 @@ class CodeMaster
   end
 end
 
-choice = pick_role
+# choice = pick_role
+choice = 'y'
 if choice == 'y'
-  player = CodeMaster.new
+  # player = CodeMaster.new
   computer = CodeBreaker.new
-  game_board = GameBoard.new(player.player_code, computer)
+  # game_board = GameBoard.new(player.player_code, computer)
+  game_board = GameBoard.new([1, 2, 3, 4], computer)
   run_computer_game(computer, game_board)
 elsif choice == 'n'
   computer = CodeMaster.new
