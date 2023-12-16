@@ -133,7 +133,9 @@ class CodeBreaker
   end
 
   def computer_guess
-    4.times.map { Random.rand(1..6) }
+    guess = 4.times.map { Random.rand(1..6) }
+    guesses.push(guess)
+    p guess
   end
 end
 
