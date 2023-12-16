@@ -40,19 +40,42 @@ def run_game(player, game_board)
   'Better luck next time!'
 end
 
+def run_computer_game(computer, game_board)
+  game_board.starting_board
+  i = 0
+  while i < 12
+    guess = computer.computer_guess
+    game_board.board_update(guess).each { |row| p row }
+    return 'The computer cracked it!' if computer.winner?(game_board.starting_board, guess)
+
+    i += 1
+  end
+  'You won!'
+end
+
+def pick_role
+  p 'Would you like to be code master? (y/n)'
+  choice = gets.chomp
+  until %w[y n].include?(choice)
+    p 'Must pick y or n'
+    choice = gets.chomp
+  end
+  choice
+end
+
 # This sets up the pieces of the board
 class GameBoard
-  attr_reader :starting_board, :player
+  attr_reader :starting_board, :code_breaker
   attr_accessor :guess_board
 
-  def initialize(code_master, player)
-    @starting_board = code_master.make_code
-    @player = player
+  def initialize(code, code_breaker)
+    @starting_board = code
+    @code_breaker = code_breaker
     @guess_board = []
   end
 
   def board_update(guess)
-    guess_board.push(player.check_guess(starting_board, guess))
+    guess_board.push(code_breaker.check_guess(starting_board, guess))
   end
 end
 
@@ -108,6 +131,10 @@ class CodeBreaker
     guesses.push(guess.split(''))
     guess.split('')
   end
+
+  def computer_guess
+    4.times.map { Random.rand(1..6) }
+  end
 end
 
 # Give codemaster role to generate initial configuration
@@ -117,9 +144,28 @@ class CodeMaster
   def make_code
     4.times.map { Random.rand(1..6) }
   end
+
+  def player_code
+    p 'Pick colors for the four locations: '
+    code = gets.chomp
+    until code.length <= 4 && code.to_i != 0
+      p 'Please try again'
+      code = gets.chomp
+    end
+    code = code.split('')
+    code.map(&:to_i)
+  end
 end
 
-computer = CodeMaster.new
-player = CodeBreaker.new
-game_board = GameBoard.new(computer, player)
-run_game(player, game_board)
+choice = pick_role
+if choice == 'y'
+  player = CodeMaster.new
+  computer = CodeBreaker.new
+  game_board = GameBoard.new(player.player_code, computer)
+  run_computer_game(computer, game_board)
+elsif choice == 'n'
+  computer = CodeMaster.new
+  player = CodeBreaker.new
+  game_board = GameBoard.new(computer.make_code, player)
+  run_game(player, game_board)
+end
